@@ -12,16 +12,14 @@ import optimize.parameter.ADN;
 import optimize.parameter.Parameter;
 
 public class Test {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		String language = "Italian";
-		int nbCharacter;
-		try {
-			nbCharacter = parseArgs(args);
-		} catch (Exception e1) {
-			nbCharacter = 5;
-			e1.printStackTrace();
-		}
-
+		List<String> param = parseArgs(args);
+		int nbCharacter = Integer.parseInt(param.get(0));
+		String languagesDirectoryPath = param.get(2);
+		String testFichierPath = param.get(1);
+		
+		
 		int debutNGram = 2;
 		int finalNGram = 5;
 		double paramPPM = 20;
@@ -30,8 +28,8 @@ public class Test {
 					
 		String result = "";
 		
-		String languagesDirectoryPath = "G:\\Altran\\LanguageDetector\\Language";
-		String testFichierPath = "G:\\Altran\\Corpus de test\\FullLanguage_NoSoloWord\\" /*+ language + "\\Test_"*/ + "TestFullLanguage_" + nbCharacter + "characters.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\TestEn_2words.txt";//Proverbe_Anglais_Français.txt";//"C:\\Users\\vnyzam\\Downloads\\fr-en\\europarl-v7.it.it";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//
+		//String languagesDirectoryPath = "..\\LanguageIdentificationData\\Language";
+		//String testFichierPath = "..\\LanguageIdentificationData\\Corpus de test\\FullLanguage_SoloWord\\" /*+ language + "\\Test_"*/ + "TestFullLanguage_" + nbCharacter + "characters.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\TestEn_2words.txt";//Proverbe_Anglais_Franï¿½ais.txt";//"C:\\Users\\vnyzam\\Downloads\\fr-en\\europarl-v7.it.it";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//
 		LanguageDetector ld = new LanguageDetector();
 		ADN adn = new ADN(LanguageDetector.supportADN);
 		Parameter<Double> p2 = new Parameter<Double>(LDParameter.Limite.getName(), limite);
@@ -63,10 +61,10 @@ public class Test {
 		
 		/*for (int i = nbCharacter; i <18; i++) {
 			String languagesDirectoryPath = "G:\\Altran\\LanguageDetector\\Language";
-			String testFichierPath = "G:\\Altran\\Corpus de test\\" + language + "\\Test_" + i + "characters.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\TestEn_2words.txt";//Proverbe_Anglais_Français.txt";//"C:\\Users\\vnyzam\\Downloads\\fr-en\\europarl-v7.it.it";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//
+			String testFichierPath = "G:\\Altran\\Corpus de test\\" + language + "\\Test_" + i + "characters.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\TestEn_2words.txt";//Proverbe_Anglais_Franï¿½ais.txt";//"C:\\Users\\vnyzam\\Downloads\\fr-en\\europarl-v7.it.it";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//
 			long debut = System.currentTimeMillis();
-			//LanguageDetector ld = new LanguageDetector(languagesDirectoryPath, true, true, true, false, "- Étude de l'état de l'art");
-			//LanguageDetector ld = new LanguageDetector(languagesDirectoryPath, false, 4, false, true, false, "de et s'élança hors");
+			//LanguageDetector ld = new LanguageDetector(languagesDirectoryPath, true, true, true, false, "- ï¿½tude de l'ï¿½tat de l'art");
+			//LanguageDetector ld = new LanguageDetector(languagesDirectoryPath, false, 4, false, true, false, "de et s'ï¿½lanï¿½a hors");
 			LanguageDetector ld = new LanguageDetector(i, languagesDirectoryPath, testFichierPath, true, Ngram, 4, false, true, false);
 			System.out.println(System.currentTimeMillis()-debut);
 			debut = System.currentTimeMillis();
@@ -136,17 +134,31 @@ public class Test {
 		m4TreeGramPG.writeProfile();*/
 	}
 	
-	private static int parseArgs(String[] args) throws Exception{
+	private static List<String> parseArgs(String[] args) throws Exception{
 		if (args.length == 0){
 			throw new NullPointerException("No argument !");
 		}
+		List<String> listReturn = new ArrayList<String>();
 		List<String> listArg = new ArrayList<String>();
 		for (String str : args)
 			listArg.add(str);
 		
-		if (listArg.contains("-nbc")) {
-			return Integer.parseInt(listArg.get(listArg.indexOf("-nbc")+1));
-		} else
-			throw new NullPointerException("No nbc number !");
+		while (listArg.size() != 0) {
+			if (listArg.contains("-nbc")) {
+				listReturn.add(listArg.get(listArg.indexOf("-nbc")+1));
+				listArg.remove(listArg.indexOf("-nbc")+1);
+				listArg.remove(listArg.indexOf("-nbc"));
+			} else if (listArg.contains("-test_path")) {
+				listReturn.add(listArg.get(listArg.indexOf("-test_path")+1));
+				listArg.remove(listArg.indexOf("-test_path")+1);
+				listArg.remove(listArg.indexOf("-test_path"));
+			} else if (listArg.contains("-language_path")) {
+				listReturn.add(listArg.get(listArg.indexOf("-language_path")+1));
+				listArg.remove(listArg.indexOf("-language_path")+1);
+				listArg.remove(listArg.indexOf("-language_path"));
+			} else
+				throw new NullPointerException("Out of valid parameter !");
+		}
+		return listReturn;
 	}
 }
