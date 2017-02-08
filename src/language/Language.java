@@ -13,6 +13,8 @@ import tree.RootNodePPM;
 import treeProfileGenerator.TreeNGramProfileDistanceMeasurer;
 
 public class Language {
+	public final static String fileSep = System.getProperty("file.separator");
+	
 	private double[] scoreNGram;
 	private int tailleEchantillonNGram;
 	private List<TreeNGramProfileDistanceMeasurer> listLearningProfile = new ArrayList<TreeNGramProfileDistanceMeasurer>();
@@ -56,7 +58,7 @@ public class Language {
 	}
 	
 	private void loadNGramProfile(int debutNGram, int finalNGram) {
-		File file = new File(this.languageDirectoryPath + "\\NGram\\" +((bGramWords) ? "Sans GramWords\\" : "Avec GramWords\\") + pourcentageCorpus);
+		File file = new File(this.languageDirectoryPath + fileSep + "NGram" + fileSep +((bGramWords) ? "Sans GramWords" + fileSep : "Avec GramWords" + fileSep) + pourcentageCorpus);
 	    if (file.exists()) {
 	    	File[] files = file.listFiles();
 	        for (int i=0;i<files.length;i++) {
@@ -74,26 +76,26 @@ public class Language {
 	}
 	
 	private void loadGramWords() {
-		File file = new File(languageDirectoryPath + "\\GramWords\\" + language + "_Grammatical_Words.txt");
+		File file = new File(languageDirectoryPath + fileSep + "GramWords" + fileSep + language + "_Grammatical_Words.txt");
 	    if (file.exists()) {
-	    	gramWordsMap = new GrammaticalWordsMap(language, languageDirectoryPath + "\\GramWords\\" + language + "_Grammatical_Words.txt");
+	    	gramWordsMap = new GrammaticalWordsMap(language, languageDirectoryPath + fileSep + "GramWords" + fileSep + language + "_Grammatical_Words.txt");
 	    }
 	}
 	
 	private void loadPPMProfile() {
-		File file = new File(languageDirectoryPath + "\\PPM\\" +((bGramWords && !bNGram) ? "Sans GramWords\\" : "Avec GramWords\\") + pourcentageCorpus + "\\"+ language + "_PPM.txt");
+		File file = new File(languageDirectoryPath + fileSep + "PPM" + fileSep +((bGramWords && !bNGram) ? "Sans GramWords" + fileSep : "Avec GramWords" + fileSep) + pourcentageCorpus + fileSep + ""+ language + "_PPM.txt");
 	    if (file.exists()) {
 	    	profilePPM = new PPMProfileDistanceMeasurer(file.getAbsolutePath());
 	    }
 	}
 	
 	private void loadPrefixeSuffixePPMProfile() {
-		File file = new File(languageDirectoryPath + "\\PPM\\" + language + "_PrefixePPM.txt");
+		File file = new File(languageDirectoryPath + fileSep + "PPM" + fileSep + language + "_PrefixePPM.txt");
 	    if (file.exists()) {
 	    	PrefixePPMProfileDistanceMeasurer pPrefixePMPDM = new PrefixePPMProfileDistanceMeasurer(file.getAbsolutePath());
 	    	prefixeProfilePPM = pPrefixePMPDM.readLearningProfile();
 	    }
-	    file = new File(languageDirectoryPath + "\\PPM\\" + language + "_SuffixePPM.txt");
+	    file = new File(languageDirectoryPath + fileSep + "PPM" + fileSep + language + "_SuffixePPM.txt");
 	    if (file.exists()) {
 	    	SuffixePPMProfileDistanceMeasurer pSuffixePMPDM = new SuffixePPMProfileDistanceMeasurer(file.getAbsolutePath());
 	    	suffixeProfilePPM = pSuffixePMPDM.readLearningProfile();
