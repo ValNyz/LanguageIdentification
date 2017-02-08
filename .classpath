@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="G:/workspace/ReaderWriter.jar" sourcepath="/Reader_Writer"/>
-	<classpathentry kind="lib" path="G:/workspace/TALTools.jar" sourcepath="/TALTools"/>
-	<classpathentry kind="lib" path="G:/workspace/GrammaticalWords.jar" sourcepath="/GrammaticalWords"/>
-	<classpathentry kind="lib" path="G:/workspace/NGram.jar" sourcepath="/NGram"/>
-	<classpathentry kind="lib" path="G:/workspace/PPM.jar" sourcepath="/PPM"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="lib/GrammaticalWords.jar"/>
+	<classpathentry kind="lib" path="lib/NGram.jar"/>
+	<classpathentry kind="lib" path="lib/PPM.jar"/>
+	<classpathentry kind="lib" path="lib/ReaderWriter.jar"/>
+	<classpathentry kind="lib" path="lib/TALTools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
