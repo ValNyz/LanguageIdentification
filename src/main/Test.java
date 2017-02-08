@@ -52,7 +52,7 @@ public class Test {
 		ld.initConstructor(nbCharacter, languagesDirectoryPath, testFichierPath, true, adn);
 		ld.setTest(true);
 		
-		AlgoGenetique ag = new AlgoGenetique(0.1, 0.25, 0.2, 100, 10000, 0.999, ld);
+		AlgoGenetique ag = new AlgoGenetique(0.15, 0.15, 0.15, 100, 10000, 0.99, ld);
 		ag.init();
 		ag.run();
 		/*long debut = System.currentTimeMillis();
