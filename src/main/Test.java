@@ -17,7 +17,7 @@ public class Test {
 		List<String> param = parseArgs(args);
 		int nbCharacter = Integer.parseInt(param.get(0));
 		String languagesDirectoryPath = param.get(2);
-		String testFichierPath = param.get(1);
+		String testFichierPath = param.get(1) + "TestFullLanguage_" + nbCharacter + "characters.txt";
 		
 		
 		int debutNGram = 2;
