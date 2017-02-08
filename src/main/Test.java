@@ -1,34 +1,65 @@
 package main;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import languageDetector.LanguageDetector;
-import optimize.parameter.Constant.TypeClassifier;
-import reader_writer.Writer;
+import languageDetector.LanguageDetector.LDParameter;
+import optimize.AlgoGenetique;
+import optimize.parameter.ADN;
+import optimize.parameter.Parameter;
 
 public class Test {
-
 	public static void main(String[] args) {
 		String language = "Italian";
-		int nbCharacter = 5;
-		boolean bNGram = true;
+		int nbCharacter;
+		try {
+			nbCharacter = parseArgs(args);
+		} catch (Exception e1) {
+			nbCharacter = 5;
+			e1.printStackTrace();
+		}
+
 		int debutNGram = 2;
 		int finalNGram = 5;
-		TypeClassifier typeClassifier = TypeClassifier.BAYES;
-		boolean bGramWords = true;
-		int paramGramWords = 1;
-		boolean bPPM = true;
-		double paramPPM = 7.5;
-		double limite = 0.25;
+		double paramPPM = 20;
+		double limite = 0.5;
 		boolean bPPMChoosingMethode = true;
 					
 		String result = "";
 		
 		String languagesDirectoryPath = "G:\\Altran\\LanguageDetector\\Language";
-		String testFichierPath = "G:\\Altran\\Corpus de test\\" + language + "\\Test_" + nbCharacter + "characters.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\TestEn_2words.txt";//Proverbe_Anglais_Français.txt";//"C:\\Users\\vnyzam\\Downloads\\fr-en\\europarl-v7.it.it";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//
-		LanguageDetector ld = new LanguageDetector(nbCharacter, languagesDirectoryPath, testFichierPath, true, bNGram, debutNGram, finalNGram, typeClassifier, bGramWords, paramGramWords, bPPM, paramPPM, limite, bPPMChoosingMethode);
+		String testFichierPath = "G:\\Altran\\Corpus de test\\FullLanguage_NoSoloWord\\" /*+ language + "\\Test_"*/ + "TestFullLanguage_" + nbCharacter + "characters.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\TestEn_2words.txt";//Proverbe_Anglais_Français.txt";//"C:\\Users\\vnyzam\\Downloads\\fr-en\\europarl-v7.it.it";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//"C:\\Users\\vnyzam\\Downloads\\TestNGRam\\Test.txt";//
+		LanguageDetector ld = new LanguageDetector();
+		ADN adn = new ADN(LanguageDetector.supportADN);
+		Parameter<Double> p2 = new Parameter<Double>(LDParameter.Limite.getName(), limite);
+		p2.setMinValue(0.0);
+		p2.setMaxValue(5.0);
+		adn.putParameter(p2);
+		adn.putParameter(new Parameter<Boolean>(LDParameter.PPMChoosingMethode.getName(), bPPMChoosingMethode));
+		Parameter<Integer> p3 = new Parameter<Integer>(LDParameter.NGramDebut.getName(), debutNGram);
+		p3.setMinValue(1);
+		p3.setMaxValue(5);
+		adn.putParameter(p3);
+		Parameter<Integer> p4 = new Parameter<Integer>(LDParameter.NGramFin.getName(), finalNGram);
+		p4.setMinValue(1);
+		p4.setMaxValue(5);
+		adn.putParameter(p4);
+		Parameter<Double> p5 = new Parameter<Double>(LDParameter.ParamPPM.getName(), paramPPM);
+		p5.setMinValue(0.1);
+		p5.setMaxValue(20.0);
+		adn.putParameter(p5);
+		ld.initConstructor(nbCharacter, languagesDirectoryPath, testFichierPath, true, adn);
+		ld.setTest(true);
 		
-		long debut = System.currentTimeMillis();
+		AlgoGenetique ag = new AlgoGenetique(0.1, 0.25, 0.2, 100, 10000, 0.999, ld);
+		ag.init();
+		ag.run();
+		/*long debut = System.currentTimeMillis();
 		result += ld.detectLanguage(true, language);
-		System.out.println(System.currentTimeMillis()-debut);
+		System.out.println(System.currentTimeMillis()-debut);*/
 		
 		/*for (int i = nbCharacter; i <18; i++) {
 			String languagesDirectoryPath = "G:\\Altran\\LanguageDetector\\Language";
@@ -42,12 +73,15 @@ public class Test {
 			result += ld.detectLanguage(true, language);
 		}*/
 		
-		System.out.println("\r\n" + result.replace(".", ","));
+		//System.out.println("\r\n" + result.replace(".", ","));
 		//result = ld2.detectLanguage();
-		Writer writer = new Writer("G:\\Altran\\result.txt");
-		writer.open();
-		writer.write(result);
-		writer.close();
+		try {
+			FileWriter writer = new FileWriter("result.txt",true);
+			writer.write(ag.toString());
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		/*/ProfileGenerator pg = new ProfileGenerator(testFichierPath1, languagesDirectoryPath, "Dutch", true, 2, 6, false, false, true, pourcentageApprentissage);
 		System.out.println(System.currentTimeMillis()-debut);
 		debut = System.currentTimeMillis();
@@ -100,5 +134,19 @@ public class Test {
 		m2TreeGramPG.writeProfile();
 		m3TreeGramPG.writeProfile();
 		m4TreeGramPG.writeProfile();*/
+	}
+	
+	private static int parseArgs(String[] args) throws Exception{
+		if (args.length == 0){
+			throw new NullPointerException("No argument !");
+		}
+		List<String> listArg = new ArrayList<String>();
+		for (String str : args)
+			listArg.add(str);
+		
+		if (listArg.contains("-nbc")) {
+			return Integer.parseInt(listArg.get(listArg.indexOf("-nbc")+1));
+		} else
+			throw new NullPointerException("No nbc number !");
 	}
 }

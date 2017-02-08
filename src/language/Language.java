@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import grammaticalWords.GrammaticalWordsMap;
+import optimize.parameter.Constant.TypeClassifier;
 import profileGenerator.PPMProfileDistanceMeasurer;
 import profileGenerator.PrefixePPMProfileDistanceMeasurer;
 import profileGenerator.SuffixePPMProfileDistanceMeasurer;
@@ -99,9 +100,9 @@ public class Language {
 	    }
 	}
 	
-	public double[] testNGram(String sentence, int typeClassifier) {
+	public double[] testNGram(String sentence, TypeClassifier typeClassifier) {
 		scoreNGram = new double[listLearningProfile.size()];
-		if (typeClassifier != 0) {
+		if (typeClassifier != TypeClassifier.OUT_OF_PLACE) {
 			for (int i=0;i<listLearningProfile.size();i++)
 				scoreNGram[i] = 1;
 		}
@@ -109,9 +110,9 @@ public class Language {
 		for (int i=0;i<listLearningProfile.size();i++) { //Boucle sur les NGrams
 			String[] words = sentence.split(" ");
 			for (int j=0;j<words.length;j++) {
-				if (typeClassifier == 0)
+				if (typeClassifier == TypeClassifier.OUT_OF_PLACE)
 					scoreNGram[i] += listLearningProfile.get(i).calculDistanceOOP(words[j], tailleEchantillonNGram);
-				else if (typeClassifier == 1) /** Méthode Naive Bayes : posterieur = anterieur*(vraisemblance/évidence)	*/
+				else if (typeClassifier == TypeClassifier.BAYES) /** Méthode Naive Bayes : posterieur = anterieur*(vraisemblance/évidence)	*/
 					scoreNGram[i] *= listLearningProfile.get(i).calculDistanceNaiveBayes(words[j]);
 				else
 					scoreNGram[i] *= (1/listLearningProfile.size())*listLearningProfile.get(i).calculDistanceNaiveBayes(words[j]);
