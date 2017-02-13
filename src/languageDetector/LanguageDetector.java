@@ -62,8 +62,9 @@ public class LanguageDetector extends Optimize {
 	private String testText;
 	private List<String> listSentence;
 	private List<Language> listLanguage = new ArrayList<Language>();
+	private Map<String, Integer> mapLanguageInt = new HashMap<String, Integer>();
 	private List<Map<String, Integer>> listTestProfile = new ArrayList<Map<String, Integer>>();
-	private static boolean bPrefixeSuffixe = false;
+	private final boolean bPrefixeSuffixe = false;
 	boolean affichage = false;
 	String result = "";
 	/*
@@ -72,7 +73,7 @@ public class LanguageDetector extends Optimize {
 	private boolean bNGram = true;
 	private boolean bGramWords = false;
 	private boolean bPPM = true;
-	private int paramGramWords = 1; // nbPoint par gramWord
+	private int paramGramWords = 2; // nbPoint par gramWord
 	// private double limite = 0.25d; // limite indétermination PPM
 	// private boolean bPPMChoosingMethode = false; //base méthode PPM = d'abord
 	// PPM si en dessous limite alors NGram
@@ -106,10 +107,6 @@ public class LanguageDetector extends Optimize {
 		this.testText = testText;
 		listSentence = SentenceSplitter.splitTextIntoSentence(this.testText);
 		init();
-	}
-	
-	public LanguageDetector(int nbCharacter, String languagesDirectoryPath, String testFilePath, boolean sentenceByLine,
-			ADN adn) {
 	}
 
 	public LanguageDetector(int nbCharacter, String languagesDirectoryPath, String testFilePath, boolean sentenceByLine,
@@ -188,12 +185,14 @@ public class LanguageDetector extends Optimize {
 	}
 
 	private void loadLanguage() {
+		mapLanguageInt.clear();
 		listLanguage.clear();
 		File file = new File(languagesDirectoryPath);
 		File[] files = file.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
 				if (files[i].isDirectory()) {
+					mapLanguageInt.put(files[i].getName(), i);
 					listLanguage.add(new Language(files[i].getName(), files[i].getAbsolutePath(),
 							bNGram,
 							adn.getParameterValue(Integer.class, LDParameter.NGramDebut.getName()),
@@ -208,8 +207,8 @@ public class LanguageDetector extends Optimize {
 
 	public String detectLanguage(boolean test/*, String language*/) {
 		double[] numericResult = new double[4];
-
-		String result = "";
+		result = "";
+		//String result = "";
 		Iterator<String> iteratorSentence = listSentence.iterator();
 		while (iteratorSentence.hasNext()) { // Boucle sur les phrases
 			String[] s = iteratorSentence.next().trim().split("\t");
@@ -338,12 +337,15 @@ public class LanguageDetector extends Optimize {
 			}
 			if (test) {
 				numericResult[0]++;
+				bestLanguage = bestLanguage.split("\t")[0];
 				if (bestLanguage.contains(language)) // Identification Correct
-					numericResult[1]++; //Juste //True Positif
-				else if (bestLanguage.contains("Indetermination"))
-					numericResult[2]++; //Indet //FalseNegatif
+					listLanguage.get(mapLanguageInt.get(language)).incrementTruePositive(); //numericResult[1]++; //Juste //True Positif
+				else if (bestLanguage.contains("Indetermination")) {
+					listLanguage.get(mapLanguageInt.get(language)).incrementFalseNegative();//numericResult[2]++; //Indet //FalseNegatif
+				}
 				else { // Erreur totale
-					numericResult[3]++; //Erreur //FalsePositif
+					listLanguage.get(mapLanguageInt.get(bestLanguage)).incrementFalsePositive();//numericResult[3]++; //Erreur //FalsePositif
+					listLanguage.get(mapLanguageInt.get(language)).incrementFalseNegative();
 				}
 			} else {
 				result += temp + "\t" + bestLanguage + "\r\n";
@@ -644,14 +646,33 @@ public class LanguageDetector extends Optimize {
 	
 	@Override
 	public double getScore() {
-		String[] listScore = result.split("\n");
-		double tp = Double.parseDouble(listScore[1]);
-		double fn = Double.parseDouble(listScore[2])+Double.parseDouble(listScore[3]);
-		double fp = Double.parseDouble(listScore[3]);
+		double precision = 0;
+
+		double rappel = 0;
+		for (Language l : listLanguage) {
+			double tp = l.getTruePositive();
+			double fn = l.getFalseNegative();
+			double fp = l.getFalsePositive();
+			precision += tp/(tp+fn);
+			rappel += tp/(tp+fp);
+		}
+		precision /= listLanguage.size();
+		rappel /= listLanguage.size();
+		//F1Mesure
+		return 2*precision*rappel/(precision+rappel);
+		//return precision;
+	}
+
+	public double getScore(String language) {
+		Language l = listLanguage.get(mapLanguageInt.get(language));
+		double tp = l.getTruePositive();
+		double fn = l.getFalseNegative();
+		double fp = l.getFalsePositive();
 		double precision = tp/(tp+fn);
 		double rappel = tp/(tp+fp);
 		//F1Mesure
 		return 2*precision*rappel/(precision+rappel);
+		//return precision;
 	}
 
 	@Override

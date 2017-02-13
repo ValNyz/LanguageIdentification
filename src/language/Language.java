@@ -15,6 +15,10 @@ import treeProfileGenerator.TreeNGramProfileDistanceMeasurer;
 public class Language {
 	public final static String fileSep = System.getProperty("file.separator");
 	
+	private int truePositive = 0;
+	private int falsePositive = 0;
+	private int falseNegative = 0;
+	
 	private double[] scoreNGram;
 	private int tailleEchantillonNGram;
 	private List<TreeNGramProfileDistanceMeasurer> listLearningProfile = new ArrayList<TreeNGramProfileDistanceMeasurer>();
@@ -212,5 +216,29 @@ public class Language {
 
 	public double getScoreSuffixePPM() {
 		return scoreSuffixePPM;
+	}
+
+	public int getTruePositive() {
+		return truePositive;
+	}
+
+	public void incrementTruePositive() {
+		this.truePositive++;
+	}
+
+	public int getFalsePositive() {
+		return falsePositive;
+	}
+
+	public void incrementFalsePositive() {
+		this.falsePositive++;
+	}
+
+	public int getFalseNegative() {
+		return falseNegative;
+	}
+
+	public void incrementFalseNegative() {
+		this.falseNegative++;
 	}
 }
