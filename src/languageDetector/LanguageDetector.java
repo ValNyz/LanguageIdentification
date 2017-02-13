@@ -659,7 +659,11 @@ public class LanguageDetector extends Optimize {
 		precision /= listLanguage.size();
 		rappel /= listLanguage.size();
 		//F1Mesure
-		return 2*precision*rappel/(precision+rappel);
+		Double r = 2*precision*rappel/(precision+rappel);
+		if (r.isNaN())
+			return 0.0;
+		else
+			return r;
 		//return precision;
 	}
 
@@ -671,7 +675,11 @@ public class LanguageDetector extends Optimize {
 		double precision = tp/(tp+fn);
 		double rappel = tp/(tp+fp);
 		//F1Mesure
-		return 2*precision*rappel/(precision+rappel);
+		Double r = 2*precision*rappel/(precision+rappel);
+		if (r.isNaN())
+			return 0.0;
+		else
+			return r;
 		//return precision;
 	}
 
